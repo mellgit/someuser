@@ -1,0 +1,62 @@
+package config
+
+import (
+	"fmt"
+	"github.com/caarlos0/env/v6"
+	"github.com/joho/godotenv"
+	"github.com/spf13/viper"
+)
+
+type Config struct {
+	Logging `mapstructure:"logging"`
+}
+
+type Logging struct {
+	Level     string `mapstructure:"level"`
+	Formatter string `mapstructure:"formatter"`
+	Handler   string `mapstructure:"handler"`
+	Path      string `mapstructure:"path"`
+}
+
+type EnvConfig struct {
+	APIHost string `env:"API_HOST" envDefault:"127.0.0.1"`
+	APIPort int    `env:"API_PORT" envDefault:"3000"`
+
+	DBHost     string `env:"POSTGRES_HOST" envDefault:"localhost"`
+	DBPort     int    `env:"POSTGRES_PORT" envDefault:"5432"`
+	DBUser     string `env:"POSTGRES_USER" envDefault:"postgres"`
+	DBPassword string `env:"POSTGRES_PASSWORD" envDefault:"postgres"`
+	DBName     string `env:"POSTGRES_DB" envDefault:"postgres"`
+
+	MigrationsDir string `env:"POSTGRES_MIGRATIONS_PATH" envDefault:"./migrations"`
+}
+
+// LoadConfig reads configuration from yml file
+func LoadConfig(path string) (*Config, error) {
+
+	viper.SetConfigFile(path)
+
+	if err := viper.ReadInConfig(); err != nil {
+		return nil, fmt.Errorf("error reading config: %v", err.Error())
+	}
+
+	config := new(Config)
+	if err := viper.Unmarshal(config); err != nil {
+		return nil, fmt.Errorf("error unmarshal config: %v", err.Error())
+	}
+	return config, nil
+}
+
+// LoadEnvConfig reads configuration from env file
+func LoadEnvConfig() (*EnvConfig, error) {
+
+	if err := godotenv.Load(); err != nil {
+		return nil, fmt.Errorf("error loading .env file: %v", err.Error())
+	}
+
+	envCfg := new(EnvConfig)
+	if err := env.Parse(envCfg); err != nil {
+		return nil, fmt.Errorf("unable to parse ennvironment variables: %v", err.Error())
+	}
+	return envCfg, nil
+}
