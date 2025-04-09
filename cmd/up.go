@@ -3,11 +3,11 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"github.com/gofiber/fiber/v2"
 	"github.com/mellgit/someuser/internal/config"
+	"github.com/mellgit/someuser/internal/transport/http/handler"
 	"github.com/mellgit/someuser/pkg/logger"
-
 	log "github.com/sirupsen/logrus"
-	"time"
 )
 
 func Up() {
@@ -37,10 +37,13 @@ func Up() {
 	log.Debugf("config: %+v", cfg)
 	log.Debugf("env: %+v", envCfg)
 
-	cnt := 0
-	for {
-		fmt.Printf("count is %d\n", cnt)
-		cnt++
-		time.Sleep(time.Second)
+	app := fiber.New()
+	{
+		someUserHandler := handler.NewSomeUser(cfg, log.WithFields(log.Fields{"service": "SomeUser"}))
+		someUserHandler.Register(app)
 	}
+	log.WithFields(log.Fields{
+		"action": "app.Listen",
+	}).Fatal(app.Listen(fmt.Sprintf(":%v", envCfg.APIPort)))
+
 }
