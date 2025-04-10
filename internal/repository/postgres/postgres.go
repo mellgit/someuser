@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	"github.com/mellgit/someuser/internal/model"
@@ -16,14 +17,28 @@ type PostgresRepository struct {
 func NewPostgresRepository(dsn string) (repository.Repository, error) {
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to open postgres connection: %w", err)
+	}
+	if err = db.Ping(); err != nil {
+		return nil, fmt.Errorf("failed to ping postgres: %w", err)
 	}
 	return &PostgresRepository{db: db}, nil
 }
 
-func (r *PostgresRepository) CreateUser(ctx context.Context, request model.CreateUserRequest) error {
-	// Реализация CREATE
-	return nil
+func (r *PostgresRepository) CreateUser(ctx context.Context, request model.CreateUserRequest) (*model.SchemaSomeUser, error) {
+
+	query := `
+        INSERT INTO someusers (username, email, password)
+        VALUES ($1, $2, $3)
+        RETURNING id, username, email, password
+    `
+	var user model.SchemaSomeUser
+	err := r.db.QueryRowContext(ctx, query, request.Username, request.Email, request.Password).Scan(&user.ID, &user.Username, &user.Email, &user.Password)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create user: %w", err)
+	}
+
+	return &user, nil
 }
 
 func (r *PostgresRepository) GetAllUsers(ctx context.Context) error {

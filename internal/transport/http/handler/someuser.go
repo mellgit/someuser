@@ -46,7 +46,8 @@ func (h *SomeUser) CreateUser(ctx *fiber.Ctx) error {
 
 	}
 
-	if err := h.SomeUserService.CreateUser(payload); err != nil {
+	user, err := h.SomeUserService.CreateUser(payload)
+	if err != nil {
 		h.Logger.WithFields(log.Fields{
 			"action": "SomeUserService.CreateUser",
 		}).Errorf("%v", err)
@@ -54,7 +55,7 @@ func (h *SomeUser) CreateUser(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(msgErr)
 	}
 
-	msg := model.Message{Message: "createUser"}
+	msg := model.SchemaSomeUser{ID: user.ID, Username: user.Username, Email: user.Email, Password: user.Password}
 	return ctx.Status(fiber.StatusOK).JSON(msg)
 }
 
