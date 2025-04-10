@@ -33,6 +33,6 @@ func (s *SomeUser) DeleteUserByID(id uuid.UUID) error {
 	return nil
 }
 
-func (s *SomeUser) UpdateUser(payload model.CreateUserRequest) error {
+func (s *SomeUser) UpdateUser(payload model.UpdateUserRequest) error {
 	return nil
 }
