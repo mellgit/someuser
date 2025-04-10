@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/swagger"
+	_ "github.com/mellgit/someuser/docs"
 	"github.com/mellgit/someuser/internal/config"
 	"github.com/mellgit/someuser/internal/repository/factory"
 	"github.com/mellgit/someuser/internal/service"
@@ -12,6 +14,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Up
+// @title Some Users
+// @version 1.0
+// @host localhost:3000
+// @BasePath /api/v1
 func Up() {
 
 	cfgPath := flag.String("config", "config.yml", "config file path")
@@ -50,6 +57,8 @@ func Up() {
 		someUserService := service.NewSomeUser(cfg, repo)
 		someUserHandler := handler.NewSomeUser(cfg, someUserService, log.WithFields(log.Fields{"service": "SomeUser"}))
 		someUserHandler.Register(app)
+
+		app.Get("/swagger/*", swagger.HandlerDefault)
 	}
 	log.WithFields(log.Fields{
 		"action": "app.Listen",
