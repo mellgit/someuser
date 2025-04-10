@@ -47,6 +47,10 @@ func (s *SomeUser) GetUserByID(id uuid.UUID) (*model.SchemaSomeUser, error) {
 	return user, nil
 }
 func (s *SomeUser) DeleteUserByID(id uuid.UUID) error {
+
+	if err := s.repo.DeleteUser(context.Background(), id); err != nil {
+		return fmt.Errorf("delete user: %w", err)
+	}
 	return nil
 }
 

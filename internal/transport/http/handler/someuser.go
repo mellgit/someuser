@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/mellgit/someuser/internal/config"
@@ -97,7 +98,7 @@ func (h *SomeUser) DeleteUserByID(ctx *fiber.Ctx) error {
 		msgErr := model.Error{Error: err.Error()}
 		return ctx.Status(fiber.StatusInternalServerError).JSON(msgErr)
 	}
-	msg := model.Message{Message: "deleteUserByID"}
+	msg := model.Message{Message: fmt.Sprintf("successfully deleted user with id %s", id)}
 	return ctx.Status(fiber.StatusOK).JSON(msg)
 }
 

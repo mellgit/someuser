@@ -73,7 +73,12 @@ func (r *PostgresRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*mo
 }
 
 func (r *PostgresRepository) DeleteUser(ctx context.Context, id uuid.UUID) error {
-	// Реализация DELETE
+
+	query := `DELETE FROM someusers WHERE id = $1`
+	_, err := r.db.ExecContext(ctx, query, id)
+	if err != nil {
+		return fmt.Errorf("failed to delete user: %w", err)
+	}
 	return nil
 }
 
