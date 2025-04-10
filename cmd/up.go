@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/mellgit/someuser/internal/config"
+	"github.com/mellgit/someuser/internal/service"
 	"github.com/mellgit/someuser/internal/transport/http/handler"
 	"github.com/mellgit/someuser/pkg/logger"
 	log "github.com/sirupsen/logrus"
@@ -39,7 +40,8 @@ func Up() {
 
 	app := fiber.New()
 	{
-		someUserHandler := handler.NewSomeUser(cfg, log.WithFields(log.Fields{"service": "SomeUser"}))
+		someUserService := service.NewSomeUser(cfg)
+		someUserHandler := handler.NewSomeUser(cfg, someUserService, log.WithFields(log.Fields{"service": "SomeUser"}))
 		someUserHandler.Register(app)
 	}
 	log.WithFields(log.Fields{
