@@ -104,6 +104,7 @@ func (h *SomeUser) DeleteUserByID(ctx *fiber.Ctx) error {
 
 func (h *SomeUser) UpdateUser(ctx *fiber.Ctx) error {
 
+	id := ctx.Params("id")
 	payload := model.UpdateUserRequest{}
 	if err := ctx.BodyParser(&payload); err != nil {
 		h.Logger.WithFields(log.Fields{
@@ -112,13 +113,14 @@ func (h *SomeUser) UpdateUser(ctx *fiber.Ctx) error {
 		msgErr := model.Error{Error: err.Error()}
 		return ctx.Status(fiber.StatusInternalServerError).JSON(msgErr)
 	}
-	if err := h.SomeUserService.UpdateUser(payload); err != nil {
+	user, err := h.SomeUserService.UpdateUser(uuid.MustParse(id), payload)
+	if err != nil {
 		h.Logger.WithFields(log.Fields{
 			"action": "SomeUserService.UpdateUser",
 		}).Errorf("%v", err)
 		msgErr := model.Error{Error: err.Error()}
 		return ctx.Status(fiber.StatusInternalServerError).JSON(msgErr)
 	}
-	msg := model.Message{Message: "updateUser"}
-	return ctx.Status(fiber.StatusOK).JSON(msg)
+
+	return ctx.Status(fiber.StatusOK).JSON(user)
 }

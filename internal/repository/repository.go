@@ -11,5 +11,5 @@ type Repository interface {
 	GetAllUsers(ctx context.Context) (*[]model.SchemaSomeUser, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (*model.SchemaSomeUser, error)
 	DeleteUser(ctx context.Context, id uuid.UUID) error
-	UpdateUser(ctx context.Context, request model.UpdateUserRequest) error
+	UpdateUser(ctx context.Context, id uuid.UUID, request model.UpdateUserRequest) (*model.SchemaSomeUser, error)
 }

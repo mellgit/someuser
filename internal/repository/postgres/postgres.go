@@ -82,7 +82,18 @@ func (r *PostgresRepository) DeleteUser(ctx context.Context, id uuid.UUID) error
 	return nil
 }
 
-func (r *PostgresRepository) UpdateUser(ctx context.Context, request model.UpdateUserRequest) error {
-	// Реализация DELETE
-	return nil
+func (r *PostgresRepository) UpdateUser(ctx context.Context, id uuid.UUID, request model.UpdateUserRequest) (*model.SchemaSomeUser, error) {
+
+	query := `
+	update someusers
+	set username=$1, email=$2, password=$3
+	where id=$4
+	returning *`
+
+	var user model.SchemaSomeUser
+	err := r.db.QueryRowContext(ctx, query, request.Username, request.Email, request.Password, id.String()).Scan(&user.ID, &user.Username, &user.Email, &user.Password)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update user: %w", err)
+	}
+	return &user, nil
 }

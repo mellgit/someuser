@@ -54,6 +54,11 @@ func (s *SomeUser) DeleteUserByID(id uuid.UUID) error {
 	return nil
 }
 
-func (s *SomeUser) UpdateUser(payload model.UpdateUserRequest) error {
-	return nil
+func (s *SomeUser) UpdateUser(id uuid.UUID, payload model.UpdateUserRequest) (*model.SchemaSomeUser, error) {
+
+	user, err := s.repo.UpdateUser(context.Background(), id, payload)
+	if err != nil {
+		return nil, fmt.Errorf("get user: %w", err)
+	}
+	return user, nil
 }
