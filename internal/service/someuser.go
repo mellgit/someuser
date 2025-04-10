@@ -38,8 +38,13 @@ func (s *SomeUser) GetAllUsers() (*[]model.SchemaSomeUser, error) {
 	return allUsers, nil
 }
 
-func (s *SomeUser) GetUserByID(id uuid.UUID) error {
-	return nil
+func (s *SomeUser) GetUserByID(id uuid.UUID) (*model.SchemaSomeUser, error) {
+
+	user, err := s.repo.GetUserByID(context.Background(), id)
+	if err != nil {
+		return nil, fmt.Errorf("get user: %w", err)
+	}
+	return user, nil
 }
 func (s *SomeUser) DeleteUserByID(id uuid.UUID) error {
 	return nil

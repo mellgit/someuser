@@ -61,9 +61,15 @@ func (r *PostgresRepository) GetAllUsers(ctx context.Context) (*[]model.SchemaSo
 	return &users, nil
 }
 
-func (r *PostgresRepository) GetUserByID(ctx context.Context, id uuid.UUID) error {
-	// Реализация UPDATE
-	return nil
+func (r *PostgresRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*model.SchemaSomeUser, error) {
+
+	query := `SELECT * FROM someusers WHERE id = $1`
+	row := r.db.QueryRowContext(ctx, query, id)
+	var user model.SchemaSomeUser
+	if err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password); err != nil {
+		return nil, fmt.Errorf("failed to get user: %w", err)
+	}
+	return &user, nil
 }
 
 func (r *PostgresRepository) DeleteUser(ctx context.Context, id uuid.UUID) error {

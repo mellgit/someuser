@@ -75,15 +75,16 @@ func (h *SomeUser) GetAllUsers(ctx *fiber.Ctx) error {
 func (h *SomeUser) GetUserByID(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("id")
-	if err := h.SomeUserService.GetUserByID(uuid.MustParse(id)); err != nil {
+	user, err := h.SomeUserService.GetUserByID(uuid.MustParse(id))
+	if err != nil {
 		h.Logger.WithFields(log.Fields{
 			"action": "SomeUserService.GetUserByID",
 		}).Errorf("%v", err)
 		msgErr := model.Error{Error: err.Error()}
 		return ctx.Status(fiber.StatusInternalServerError).JSON(msgErr)
 	}
-	msg := model.Message{Message: "getUserByID"}
-	return ctx.Status(fiber.StatusOK).JSON(msg)
+
+	return ctx.Status(fiber.StatusOK).JSON(user)
 }
 
 func (h *SomeUser) DeleteUserByID(ctx *fiber.Ctx) error {

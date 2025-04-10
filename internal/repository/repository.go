@@ -9,7 +9,7 @@ import (
 type Repository interface {
 	CreateUser(ctx context.Context, request model.CreateUserRequest) (*model.SchemaSomeUser, error)
 	GetAllUsers(ctx context.Context) (*[]model.SchemaSomeUser, error)
-	GetUserByID(ctx context.Context, id uuid.UUID) error
+	GetUserByID(ctx context.Context, id uuid.UUID) (*model.SchemaSomeUser, error)
 	DeleteUser(ctx context.Context, id uuid.UUID) error
 	UpdateUser(ctx context.Context, request model.UpdateUserRequest) error
 }
