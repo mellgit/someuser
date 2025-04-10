@@ -41,9 +41,24 @@ func (r *PostgresRepository) CreateUser(ctx context.Context, request model.Creat
 	return &user, nil
 }
 
-func (r *PostgresRepository) GetAllUsers(ctx context.Context) error {
-	// Реализация READ
-	return nil
+func (r *PostgresRepository) GetAllUsers(ctx context.Context) (*[]model.SchemaSomeUser, error) {
+
+	query := `SELECT * FROM someusers`
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get all users: %w", err)
+	}
+	defer rows.Close()
+
+	var users []model.SchemaSomeUser
+	for rows.Next() {
+		var user model.SchemaSomeUser
+		if err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.Password); err != nil {
+			return nil, fmt.Errorf("failed to get all users: %w", err)
+		}
+		users = append(users, user)
+	}
+	return &users, nil
 }
 
 func (r *PostgresRepository) GetUserByID(ctx context.Context, id uuid.UUID) error {

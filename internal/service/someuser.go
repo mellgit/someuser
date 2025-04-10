@@ -29,8 +29,13 @@ func (s *SomeUser) CreateUser(payload model.CreateUserRequest) (*model.SchemaSom
 	return user, nil
 }
 
-func (s *SomeUser) GetAllUsers() error {
-	return nil
+func (s *SomeUser) GetAllUsers() (*[]model.SchemaSomeUser, error) {
+
+	allUsers, err := s.repo.GetAllUsers(context.Background())
+	if err != nil {
+		return nil, fmt.Errorf("get all users: %w", err)
+	}
+	return allUsers, nil
 }
 
 func (s *SomeUser) GetUserByID(id uuid.UUID) error {

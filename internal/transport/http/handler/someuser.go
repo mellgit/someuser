@@ -55,21 +55,21 @@ func (h *SomeUser) CreateUser(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(msgErr)
 	}
 
-	msg := model.SchemaSomeUser{ID: user.ID, Username: user.Username, Email: user.Email, Password: user.Password}
-	return ctx.Status(fiber.StatusOK).JSON(msg)
+	return ctx.Status(fiber.StatusOK).JSON(user)
 }
 
 func (h *SomeUser) GetAllUsers(ctx *fiber.Ctx) error {
 
-	if err := h.SomeUserService.GetAllUsers(); err != nil {
+	allUsers, err := h.SomeUserService.GetAllUsers()
+	if err != nil {
 		h.Logger.WithFields(log.Fields{
 			"action": "SomeUserService.GetAllUsers",
 		}).Errorf("%v", err)
 		msgErr := model.Error{Error: err.Error()}
 		return ctx.Status(fiber.StatusInternalServerError).JSON(msgErr)
 	}
-	msg := model.Message{Message: "getAllUsers"}
-	return ctx.Status(fiber.StatusOK).JSON(msg)
+
+	return ctx.Status(fiber.StatusOK).JSON(allUsers)
 }
 
 func (h *SomeUser) GetUserByID(ctx *fiber.Ctx) error {
