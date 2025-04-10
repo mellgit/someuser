@@ -12,7 +12,11 @@ import (
 func NewRepository(envCfg config.EnvConfig) (repository.Repository, error) {
 	switch envCfg.DBType {
 	case "postgres":
-		return postgres.NewPostgresRepository(envCfg.MigrationsDSN)
+		dsn := fmt.Sprintf(
+			"host=%v port=%v dbname=%v user=%v password=%v sslmode=disable",
+			envCfg.DBHost, envCfg.DBPort, envCfg.DBName, envCfg.DBUser, envCfg.DBPassword,
+		)
+		return postgres.NewPostgresRepository(dsn)
 	//case "mongodb":
 	//	// Разделите config на URI, dbName и collectionName
 	//	return mongo.NewMongoRepository(config, "dbName", "collectionName")
