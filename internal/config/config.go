@@ -22,13 +22,16 @@ type EnvConfig struct {
 	APIHost string `env:"API_HOST" envDefault:"127.0.0.1"`
 	APIPort int    `env:"API_PORT" envDefault:"3000"`
 
+	DBType string `env:"DB_TYPE" envDefault:"postgres"`
+
 	DBHost     string `env:"POSTGRES_HOST" envDefault:"localhost"`
 	DBPort     int    `env:"POSTGRES_PORT" envDefault:"5432"`
 	DBUser     string `env:"POSTGRES_USER" envDefault:"postgres"`
 	DBPassword string `env:"POSTGRES_PASSWORD" envDefault:"postgres"`
 	DBName     string `env:"POSTGRES_DB" envDefault:"postgres"`
 
-	MigrationsDir string `env:"POSTGRES_MIGRATIONS_PATH" envDefault:"./migrations"`
+	MigrationsPath string `env:"POSTGRES_MIGRATIONS_PATH" envDefault:"./migrations"`
+	MigrationsDSN  string `env:"POSTGRES_MIGRATIONS_DSN" envDefault:"host=$(DB_HOST) port=$(DB_PORT) dbname=$(DB_NAME) user=$(DB_USER) password=$(DB_PASSWORD) sslmode=disable"`
 }
 
 // LoadConfig reads configuration from yml file

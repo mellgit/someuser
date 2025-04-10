@@ -4,21 +4,22 @@ import (
 	"github.com/google/uuid"
 	"github.com/mellgit/someuser/internal/config"
 	"github.com/mellgit/someuser/internal/model"
+	"github.com/mellgit/someuser/internal/repository"
 )
 
 type SomeUser struct {
-	Cfg *config.Config
-	//repo
+	Cfg  *config.Config
+	repo repository.Repository
 }
 
-func NewSomeUser(cfg *config.Config) *SomeUser {
+func NewSomeUser(cfg *config.Config, repo repository.Repository) *SomeUser {
 	return &SomeUser{
-		Cfg: cfg,
+		Cfg:  cfg,
+		repo: repo,
 	}
 }
 
 func (s *SomeUser) CreateUser(payload model.CreateUserRequest) error {
-
 	return nil
 }
 
