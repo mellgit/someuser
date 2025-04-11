@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
+	"github.com/mellgit/someuser/internal/config"
 	"github.com/mellgit/someuser/internal/model"
 	"github.com/mellgit/someuser/internal/repository"
 	"github.com/pressly/goose/v3"
@@ -15,7 +16,11 @@ type PostgresRepository struct {
 	db *sql.DB
 }
 
-func NewPostgresRepository(dsn, migrationsPath string) (repository.Repository, error) {
+func NewPostgresRepository(envCfg config.EnvConfig) (repository.Repository, error) {
+	dsn := fmt.Sprintf(
+		"host=%v port=%v dbname=%v user=%v password=%v sslmode=disable",
+		envCfg.DBHost, envCfg.DBPort, envCfg.DBName, envCfg.DBUser, envCfg.DBPassword,
+	)
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open postgres connection: %w", err)
@@ -23,7 +28,7 @@ func NewPostgresRepository(dsn, migrationsPath string) (repository.Repository, e
 	if err = db.Ping(); err != nil {
 		return nil, fmt.Errorf("failed to ping postgres: %w", err)
 	}
-	if err = goose.Up(db, migrationsPath); err != nil {
+	if err = goose.Up(db, envCfg.MigrationsPath); err != nil {
 		fmt.Errorf("failed to create migrations: %w", err)
 	}
 	return &PostgresRepository{db: db}, nil
