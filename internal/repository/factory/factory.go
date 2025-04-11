@@ -3,8 +3,8 @@ package factory
 import (
 	"fmt"
 	"github.com/mellgit/someuser/internal/config"
+	"github.com/mellgit/someuser/internal/repository/mongo"
 
-	//"github.com/mellgit/someuser/internal/repository/mongo"
 	"github.com/mellgit/someuser/internal/repository"
 	"github.com/mellgit/someuser/internal/repository/postgres"
 )
@@ -17,9 +17,8 @@ func NewRepository(envCfg config.EnvConfig) (repository.Repository, error) {
 			envCfg.DBHost, envCfg.DBPort, envCfg.DBName, envCfg.DBUser, envCfg.DBPassword,
 		)
 		return postgres.NewPostgresRepository(dsn, envCfg.MigrationsPath)
-	//case "mongodb":
-	//	// Разделите config на URI, dbName и collectionName
-	//	return mongo.NewMongoRepository(config, "dbName", "collectionName")
+	case "mongodb":
+		return mongo.NewMongoRepository(envCfg)
 	default:
 		return nil, fmt.Errorf("unsupported database type: %s", envCfg.DBType)
 	}

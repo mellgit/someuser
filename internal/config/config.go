@@ -32,6 +32,13 @@ type EnvConfig struct {
 
 	MigrationsPath string `env:"POSTGRES_MIGRATIONS_PATH" envDefault:"./migrations"`
 	MigrationsDSN  string `env:"POSTGRES_MIGRATIONS_DSN" envDefault:"host=$(DB_HOST) port=$(DB_PORT) dbname=$(DB_NAME) user=$(DB_USER) password=$(DB_PASSWORD) sslmode=disable"`
+
+	MongoHost       string `env:"MONGO_HOST" envDefault:"localhost"`
+	MongoPort       int    `env:"MONGO_PORT" envDefault:"27017"`
+	MongoUser       string `env:"MONGO_USER" envDefault:"root"`
+	MongoPassword   string `env:"MONGO_PASSWORD" envDefault:"root"`
+	MongoDB         string `env:"MONGO_DB" envDefault:"admin"`
+	MongoCollection string `env:"MONGO_COLLECTION" envDefault:"test"`
 }
 
 // LoadConfig reads configuration from yml file
