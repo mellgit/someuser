@@ -1,22 +1,21 @@
 package model
 
-import "github.com/google/uuid"
-
 type CreateUserRequest struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Username string `bson:"username" json:"username"`
+	Email    string `bson:"email" json:"email"`
+	Password string `bson:"password" json:"password"`
 }
 
 type UpdateUserRequest struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Username string `bson:"username" json:"username"`
+	Email    string `bson:"email" json:"email"`
+	Password string `bson:"password" json:"password"`
 }
 
 type SchemaSomeUser struct {
-	ID       uuid.UUID `db:"id" json:"id"`
-	Username string    `db:"username" json:"username"`
-	Email    string    `db:"email" json:"email"`
-	Password string    `db:"password" json:"password"`
+	// TODO uuid for postgres and primitive.ObjectID for mongodb
+	ID       any    `bson:"_id" db:"id" json:"_id,omitempty"`
+	Username string `bson:"username" db:"username" json:"username"`
+	Email    string `bson:"email" db:"email" json:"email"`
+	Password string `bson:"password" db:"password" json:"password"`
 }
