@@ -16,7 +16,7 @@ func NewRepository(envCfg config.EnvConfig) (repository.Repository, error) {
 			"host=%v port=%v dbname=%v user=%v password=%v sslmode=disable",
 			envCfg.DBHost, envCfg.DBPort, envCfg.DBName, envCfg.DBUser, envCfg.DBPassword,
 		)
-		return postgres.NewPostgresRepository(dsn)
+		return postgres.NewPostgresRepository(dsn, envCfg.MigrationsPath)
 	//case "mongodb":
 	//	// Разделите config на URI, dbName и collectionName
 	//	return mongo.NewMongoRepository(config, "dbName", "collectionName")
