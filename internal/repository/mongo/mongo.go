@@ -61,8 +61,18 @@ func (m MongoRepository) CreateUser(ctx context.Context, request model.CreateUse
 }
 
 func (m MongoRepository) GetAllUsers(ctx context.Context) (*[]model.SchemaSomeUser, error) {
-	//TODO implement me
-	panic("implement me")
+
+	res, err := m.collection.Find(ctx, bson.D{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to find all users: %w", err)
+	}
+	var users []model.SchemaSomeUser
+	err = res.All(ctx, &users)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find all users: %w", err)
+	}
+	return &users, nil
+
 }
 
 func (m MongoRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*model.SchemaSomeUser, error) {
