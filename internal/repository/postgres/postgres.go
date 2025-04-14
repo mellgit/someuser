@@ -70,10 +70,18 @@ func (r *PostgresRepository) GetAllUsers(ctx context.Context) (*[]model.SchemaSo
 	return &users, nil
 }
 
-func (r *PostgresRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*model.SchemaSomeUser, error) {
+// func (r *PostgresRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*model.SchemaSomeUser, error) {
+func (r *PostgresRepository) GetUserByID(ctx context.Context, id string) (*model.SchemaSomeUser, error) {
 
+	//id = id.(uuid.UUID)
+	uuID, err := uuid.Parse(id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse user id: %w", err)
+	}
+	//id = uuid.Must(uuid.FromString(id))
 	query := `SELECT * FROM someusers WHERE id = $1`
-	row := r.db.QueryRowContext(ctx, query, id)
+	//row := r.db.QueryRowContext(ctx, query, id)
+	row := r.db.QueryRowContext(ctx, query, uuID)
 	var user model.SchemaSomeUser
 	if err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password); err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
@@ -81,18 +89,26 @@ func (r *PostgresRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*mo
 	return &user, nil
 }
 
-func (r *PostgresRepository) DeleteUser(ctx context.Context, id uuid.UUID) error {
+func (r *PostgresRepository) DeleteUser(ctx context.Context, id string) error {
 
+	uuID, err := uuid.Parse(id)
+	if err != nil {
+		return fmt.Errorf("failed to parse user id: %w", err)
+	}
 	query := `DELETE FROM someusers WHERE id = $1`
-	_, err := r.db.ExecContext(ctx, query, id)
+	_, err = r.db.ExecContext(ctx, query, uuID)
 	if err != nil {
 		return fmt.Errorf("failed to delete user: %w", err)
 	}
 	return nil
 }
 
-func (r *PostgresRepository) UpdateUser(ctx context.Context, id uuid.UUID, request model.UpdateUserRequest) (*model.SchemaSomeUser, error) {
+func (r *PostgresRepository) UpdateUser(ctx context.Context, id string, request model.UpdateUserRequest) (*model.SchemaSomeUser, error) {
 
+	uuID, err := uuid.Parse(id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse user id: %w", err)
+	}
 	query := `
 	update someusers
 	set username=$1, email=$2, password=$3
@@ -100,7 +116,7 @@ func (r *PostgresRepository) UpdateUser(ctx context.Context, id uuid.UUID, reque
 	returning *`
 
 	var user model.SchemaSomeUser
-	err := r.db.QueryRowContext(ctx, query, request.Username, request.Email, request.Password, id.String()).Scan(&user.ID, &user.Username, &user.Email, &user.Password)
+	err = r.db.QueryRowContext(ctx, query, request.Username, request.Email, request.Password, uuID.String()).Scan(&user.ID, &user.Username, &user.Email, &user.Password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to update user: %w", err)
 	}
