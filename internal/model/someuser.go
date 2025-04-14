@@ -1,9 +1,5 @@
 package model
 
-import (
-	"go.mongodb.org/mongo-driver/v2/bson"
-)
-
 type CreateUserRequest struct {
 	Username string `bson:"username" json:"username"`
 	Email    string `bson:"email" json:"email"`
@@ -17,9 +13,8 @@ type UpdateUserRequest struct {
 }
 
 type SchemaSomeUser struct {
-	// TODO uuid for postgres and bson.ObjectID for mongodb
-	ID       bson.ObjectID `bson:"_id" json:"_id,omitempty"`
-	Username string        `bson:"username" json:"username"`
-	Email    string        `bson:"email" json:"email"`
-	Password string        `bson:"password" json:"password"`
+	ID       any    `db:"id" bson:"_id" json:"id,omitempty"`
+	Username string `db:"username" bson:"username" json:"username"`
+	Email    string `db:"email" bson:"email" json:"email"`
+	Password string `db:"password" bson:"password" json:"password"`
 }

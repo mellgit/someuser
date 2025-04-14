@@ -55,8 +55,6 @@ func (m MongoRepository) CreateUser(ctx context.Context, request model.CreateUse
 	if err != nil {
 		return nil, fmt.Errorf("failed to find inserted document: %w", err)
 	}
-	//user.ID = resID.(bson.ObjectID).Hex()
-
 	return &user, nil
 }
 
@@ -72,16 +70,14 @@ func (m MongoRepository) GetAllUsers(ctx context.Context) (*[]model.SchemaSomeUs
 		return nil, fmt.Errorf("failed to find all users: %w", err)
 	}
 	return &users, nil
-
 }
 
-func (m MongoRepository) GetUserByID(ctx context.Context, id string) (*model.SchemaSomeUser, error) {
+func (m MongoRepository) GetUserByID(ctx context.Context, id any) (*model.SchemaSomeUser, error) {
 
-	objectID, err := bson.ObjectIDFromHex(id)
+	objectID, err := bson.ObjectIDFromHex(id.(string))
 	if err != nil {
 		return nil, fmt.Errorf("invalid id format: %w", err)
 	}
-
 	filter := bson.M{"_id": objectID}
 	var user model.SchemaSomeUser
 	if err := m.collection.FindOne(ctx, filter).Decode(&user); err != nil {
@@ -90,13 +86,12 @@ func (m MongoRepository) GetUserByID(ctx context.Context, id string) (*model.Sch
 		}
 		return nil, fmt.Errorf("failed to find user by id: %w", err)
 	}
-
 	return &user, nil
 }
 
-func (m MongoRepository) DeleteUser(ctx context.Context, id string) error {
+func (m MongoRepository) DeleteUser(ctx context.Context, id any) error {
 
-	objectID, err := bson.ObjectIDFromHex(id)
+	objectID, err := bson.ObjectIDFromHex(id.(string))
 	if err != nil {
 		return fmt.Errorf("invalid id format: %w", err)
 	}
@@ -111,9 +106,9 @@ func (m MongoRepository) DeleteUser(ctx context.Context, id string) error {
 	return nil
 }
 
-func (m MongoRepository) UpdateUser(ctx context.Context, id string, request model.UpdateUserRequest) (*model.SchemaSomeUser, error) {
+func (m MongoRepository) UpdateUser(ctx context.Context, id any, request model.UpdateUserRequest) (*model.SchemaSomeUser, error) {
 
-	objectID, err := bson.ObjectIDFromHex(id)
+	objectID, err := bson.ObjectIDFromHex(id.(string))
 	if err != nil {
 		return nil, fmt.Errorf("invalid id format: %w", err)
 	}
@@ -130,7 +125,5 @@ func (m MongoRepository) UpdateUser(ctx context.Context, id string, request mode
 	if err != nil {
 		return nil, fmt.Errorf("failed to find inserted document: %w", err)
 	}
-
 	return &user, nil
-
 }

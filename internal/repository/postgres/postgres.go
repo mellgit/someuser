@@ -42,11 +42,12 @@ func (r *PostgresRepository) CreateUser(ctx context.Context, request model.Creat
         RETURNING id, username, email, password
     `
 	var user model.SchemaSomeUser
-	err := r.db.QueryRowContext(ctx, query, request.Username, request.Email, request.Password).Scan(&user.ID, &user.Username, &user.Email, &user.Password)
+	var tempID uuid.UUID
+	err := r.db.QueryRowContext(ctx, query, request.Username, request.Email, request.Password).Scan(&tempID, &user.Username, &user.Email, &user.Password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
-
+	user.ID = tempID
 	return &user, nil
 }
 
@@ -60,38 +61,38 @@ func (r *PostgresRepository) GetAllUsers(ctx context.Context) (*[]model.SchemaSo
 	defer rows.Close()
 
 	var users []model.SchemaSomeUser
+	var tempID uuid.UUID
 	for rows.Next() {
 		var user model.SchemaSomeUser
-		if err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.Password); err != nil {
+		if err := rows.Scan(&tempID, &user.Username, &user.Email, &user.Password); err != nil {
 			return nil, fmt.Errorf("failed to get all users: %w", err)
 		}
+		user.ID = tempID
 		users = append(users, user)
 	}
 	return &users, nil
 }
 
-// func (r *PostgresRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*model.SchemaSomeUser, error) {
-func (r *PostgresRepository) GetUserByID(ctx context.Context, id string) (*model.SchemaSomeUser, error) {
+func (r *PostgresRepository) GetUserByID(ctx context.Context, id any) (*model.SchemaSomeUser, error) {
 
-	//id = id.(uuid.UUID)
-	uuID, err := uuid.Parse(id)
+	uuID, err := uuid.Parse(id.(string))
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse user id: %w", err)
 	}
-	//id = uuid.Must(uuid.FromString(id))
 	query := `SELECT * FROM someusers WHERE id = $1`
-	//row := r.db.QueryRowContext(ctx, query, id)
 	row := r.db.QueryRowContext(ctx, query, uuID)
 	var user model.SchemaSomeUser
-	if err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password); err != nil {
+	var tempID uuid.UUID
+	if err := row.Scan(&tempID, &user.Username, &user.Email, &user.Password); err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
+	user.ID = tempID
 	return &user, nil
 }
 
-func (r *PostgresRepository) DeleteUser(ctx context.Context, id string) error {
+func (r *PostgresRepository) DeleteUser(ctx context.Context, id any) error {
 
-	uuID, err := uuid.Parse(id)
+	uuID, err := uuid.Parse(id.(string))
 	if err != nil {
 		return fmt.Errorf("failed to parse user id: %w", err)
 	}
@@ -103,9 +104,9 @@ func (r *PostgresRepository) DeleteUser(ctx context.Context, id string) error {
 	return nil
 }
 
-func (r *PostgresRepository) UpdateUser(ctx context.Context, id string, request model.UpdateUserRequest) (*model.SchemaSomeUser, error) {
+func (r *PostgresRepository) UpdateUser(ctx context.Context, id any, request model.UpdateUserRequest) (*model.SchemaSomeUser, error) {
 
-	uuID, err := uuid.Parse(id)
+	uuID, err := uuid.Parse(id.(string))
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse user id: %w", err)
 	}
@@ -116,9 +117,11 @@ func (r *PostgresRepository) UpdateUser(ctx context.Context, id string, request 
 	returning *`
 
 	var user model.SchemaSomeUser
-	err = r.db.QueryRowContext(ctx, query, request.Username, request.Email, request.Password, uuID.String()).Scan(&user.ID, &user.Username, &user.Email, &user.Password)
+	var tempID uuid.UUID
+	err = r.db.QueryRowContext(ctx, query, request.Username, request.Email, request.Password, uuID.String()).Scan(&tempID, &user.Username, &user.Email, &user.Password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to update user: %w", err)
 	}
+	user.ID = tempID
 	return &user, nil
 }
