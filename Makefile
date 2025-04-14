@@ -3,7 +3,7 @@ LOCAL_BIN:=$(PWD)/bin
 
 install-deps:
 	GOBIN=$(LOCAL_BIN) go install github.com/pressly/goose/v3/cmd/goose@v3.23.0
-	GOBIN=$(LOCAL_BIN) go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.28.0
+	#GOBIN=$(LOCAL_BIN) go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.28.0
 	GOBIN=$(LOCAL_BIN) go install github.com/swaggo/swag/cmd/swag@v1.16.3
 
 migration-status:
@@ -33,8 +33,11 @@ i:
 b:
 	docker build -t someuser .
 cleardb:
-	rm -r ./data
+	rm -r ./mongo_data ./postgres_data
 r: down up
+cn:
+	docker rmi $(docker images -q --filter="dangling=true") # clear images with none status
+
 
 lu:
 	docker logs -f --tail 100 someuser

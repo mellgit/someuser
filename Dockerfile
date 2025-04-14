@@ -25,6 +25,7 @@ WORKDIR /home/app
 COPY --from=builder --chown=app:app /etc/build-someuser/someuser .
 COPY config.yml /home/app/config.yml
 COPY .env /home/app/.env
+COPY ./migrations /home/app/migrations
 
 USER app
 
