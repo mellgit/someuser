@@ -1,62 +1,63 @@
 version: "3.3"
 
 services:
-#  some-user:
-#    build:
-#      context: .  # Указывает путь к Dockerfile (текущая директория)
-#      dockerfile: Dockerfile  # Имя Dockerfile (по умолчанию "Dockerfile")
-#    container_name: someuser
-#    volumes:
-#      - /etc/timezone:/etc/timezone:ro
-#      - /etc/localtime:/etc/localtime:ro
-#      - ./config.yml:/home/app/config.yml:ro
-#      - ./.env:/home/app/.env:ro
-##    depends_on:
-##      - postgres
-##    ports:
-##      - "3000:3000"
-#    env_file:
-#      - .env
-#    restart: "always"
-#    command: ["./someuser", "-config", "/home/app/config.yml"]
-#    logging:
-#      driver: "json-file"
-#      options:
-#        max-file: "5"
-#        max-size: "10m"
+  some-user:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: someuser
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - ./config.yml:/home/app/config.yml:ro
+      - ./.env:/home/app/.env:ro
+    depends_on:
+      - postgres
+      - mongodb
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    restart: "always"
+    command: ["./someuser", "-config", "/home/app/config.yml"]
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "10m"
 
-#  postgres:
-#    image: postgres:17.2-bullseye
-#    container_name: postgres
-#    ports:
-#      - "5432:5432"
-#    environment:
-#      POSTGRES_USER: ${POSTGRES_USER}
-#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#      POSTGRES_DB: ${POSTGRES_DB}
-#      PGDATA: "/var/lib/postgresql/data"
-#    volumes:
-#      - ./postgres_data:/var/lib/postgresql/data
-#    restart: "always"
-#    healthcheck:
-#      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 5
-#    logging:
-#      driver: "json-file"
-#      options:
-#        max-file: "5"
-#        max-size: "10m"
+  postgres:
+    image: postgres:17.2-bullseye
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: "/var/lib/postgresql/data"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    restart: "always"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "10m"
 
   mongodb:
-    image: mongo:latest           # Используем официальный образ MongoDB
-    container_name: mongodb       # Задаем имя контейнера
-    restart: always               # Перезапуск контейнера в случае сбоя
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
     ports:
-      - "27017:27017"             # Пробрасываем порт для подключения к MongoDB
+      - "27017:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}    # Определяем пользователя с полномочиями суперпользователя
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD} # Пароль для пользователя root
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
     volumes:
-      - ./mongo_data:/data/db     # Монтируем том для сохранения данных
+      - ./mongo_data:/data/db
