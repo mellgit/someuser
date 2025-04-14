@@ -103,6 +103,9 @@ func (m MongoRepository) DeleteUser(ctx context.Context, id string) error {
 	filter := bson.M{"_id": objectID}
 	_, err = m.collection.DeleteOne(ctx, filter)
 	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return fmt.Errorf("user not found: %w", err)
+		}
 		return fmt.Errorf("failed to delete user: %w", err)
 	}
 	return nil
@@ -117,6 +120,9 @@ func (m MongoRepository) UpdateUser(ctx context.Context, id string, request mode
 	var user model.SchemaSomeUser
 	_, err = m.collection.UpdateOne(ctx, bson.M{"_id": objectID}, bson.M{"$set": request})
 	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, fmt.Errorf("user not found: %w", err)
+		}
 		return nil, fmt.Errorf("failed to update user: %w", err)
 	}
 	filter := bson.M{"_id": objectID}
