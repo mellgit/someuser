@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 	"github.com/mellgit/someuser/internal/config"
 	"github.com/mellgit/someuser/internal/model"
 	"github.com/mellgit/someuser/internal/service"
@@ -102,7 +101,7 @@ func (h *SomeUser) GetAllUsers(ctx *fiber.Ctx) error {
 // @Tags         SomeUsers
 // @Accept       json
 // @Produce      json
-// @Param        id path string true "UUID"
+// @Param        id path string true "UUID or string"
 // @Success      200 {object} model.SchemaSomeUser
 // @Failure      400 {object} model.Error
 // @Failure      404 {object} model.Error
@@ -111,7 +110,7 @@ func (h *SomeUser) GetAllUsers(ctx *fiber.Ctx) error {
 func (h *SomeUser) GetUserByID(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("id")
-	user, err := h.SomeUserService.GetUserByID(uuid.MustParse(id))
+	user, err := h.SomeUserService.GetUserByID(id)
 	if err != nil {
 		h.Logger.WithFields(log.Fields{
 			"action": "SomeUserService.GetUserByID",
@@ -138,7 +137,7 @@ func (h *SomeUser) GetUserByID(ctx *fiber.Ctx) error {
 func (h *SomeUser) DeleteUserByID(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("id")
-	if err := h.SomeUserService.DeleteUserByID(uuid.MustParse(id)); err != nil {
+	if err := h.SomeUserService.DeleteUserByID(id); err != nil {
 		h.Logger.WithFields(log.Fields{
 			"action": "SomeUserService.DeleteUserByID",
 		}).Errorf("%v", err)
@@ -173,7 +172,7 @@ func (h *SomeUser) UpdateUser(ctx *fiber.Ctx) error {
 		msgErr := model.Error{Error: err.Error()}
 		return ctx.Status(fiber.StatusServiceUnavailable).JSON(msgErr)
 	}
-	user, err := h.SomeUserService.UpdateUser(uuid.MustParse(id), payload)
+	user, err := h.SomeUserService.UpdateUser(id, payload)
 	if err != nil {
 		h.Logger.WithFields(log.Fields{
 			"action": "SomeUserService.UpdateUser",

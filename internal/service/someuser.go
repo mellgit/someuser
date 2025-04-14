@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/google/uuid"
 	"github.com/mellgit/someuser/internal/config"
 	"github.com/mellgit/someuser/internal/model"
 	"github.com/mellgit/someuser/internal/repository"
@@ -38,7 +37,7 @@ func (s *SomeUser) GetAllUsers() (*[]model.SchemaSomeUser, error) {
 	return allUsers, nil
 }
 
-func (s *SomeUser) GetUserByID(id uuid.UUID) (*model.SchemaSomeUser, error) {
+func (s *SomeUser) GetUserByID(id string) (*model.SchemaSomeUser, error) {
 
 	user, err := s.repo.GetUserByID(context.Background(), id)
 	if err != nil {
@@ -46,7 +45,7 @@ func (s *SomeUser) GetUserByID(id uuid.UUID) (*model.SchemaSomeUser, error) {
 	}
 	return user, nil
 }
-func (s *SomeUser) DeleteUserByID(id uuid.UUID) error {
+func (s *SomeUser) DeleteUserByID(id string) error {
 
 	if err := s.repo.DeleteUser(context.Background(), id); err != nil {
 		return fmt.Errorf("delete user: %w", err)
@@ -54,7 +53,7 @@ func (s *SomeUser) DeleteUserByID(id uuid.UUID) error {
 	return nil
 }
 
-func (s *SomeUser) UpdateUser(id uuid.UUID, payload model.UpdateUserRequest) (*model.SchemaSomeUser, error) {
+func (s *SomeUser) UpdateUser(id string, payload model.UpdateUserRequest) (*model.SchemaSomeUser, error) {
 
 	user, err := s.repo.UpdateUser(context.Background(), id, payload)
 	if err != nil {
