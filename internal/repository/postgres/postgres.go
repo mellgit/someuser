@@ -29,7 +29,7 @@ func NewPostgresRepository(envCfg config.EnvConfig) (repository.Repository, erro
 		return nil, fmt.Errorf("failed to ping postgres: %w", err)
 	}
 	if err = goose.Up(db, envCfg.MigrationsPath); err != nil {
-		fmt.Errorf("failed to create migrations: %w", err)
+		return nil, fmt.Errorf("failed to create migrations: %w", err)
 	}
 	return &PostgresRepository{db: db}, nil
 }
