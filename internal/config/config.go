@@ -39,6 +39,10 @@ type EnvConfig struct {
 	MongoPassword   string `env:"MONGO_PASSWORD" envDefault:"root"`
 	MongoDB         string `env:"MONGO_DB" envDefault:"admin"`
 	MongoCollection string `env:"MONGO_COLLECTION" envDefault:"test"`
+
+	RedisHost string `env:"REDIS_HOST" envDefault:"localhost"`
+	RedisPort int    `env:"REDIS_PORT" envDefault:"6379"`
+	RedisDB   int    `env:"REDIS_DB" envDefault:"0"`
 }
 
 // LoadConfig reads configuration from yml file
