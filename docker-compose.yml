@@ -61,3 +61,13 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
     volumes:
       - ./mongo_data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis_data:/data
+

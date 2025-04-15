@@ -43,3 +43,5 @@ lu:
 	docker logs -f --tail 100 someuser
 eu:
 	docker exec -it someuser sh
+er:
+	docker exec -it redis redis-cli
