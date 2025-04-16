@@ -23,7 +23,6 @@ func NewRedisRepository(envCfg config.EnvConfig) (repository.Repository, error) 
 		DB:       envCfg.RedisDB,
 	})
 
-	fmt.Println("Redis Repository Initialized")
 	return &RedisRepository{client: client}, nil
 }
 
@@ -51,8 +50,26 @@ func (r RedisRepository) CreateUser(ctx context.Context, request model.CreateUse
 }
 
 func (r RedisRepository) GetAllUsers(ctx context.Context) (*[]model.SchemaSomeUser, error) {
-	//TODO implement me
-	panic("implement me")
+
+	keys, err := r.client.Keys(ctx, "*").Result()
+	if err != nil {
+		return nil, fmt.Errorf("get keys: %w", err)
+	}
+
+	var users []model.SchemaSomeUser
+	for _, key := range keys {
+		val, err := r.client.Get(ctx, key).Result()
+		if err != nil {
+			return nil, fmt.Errorf("get value: %w", err)
+		}
+		var user model.SchemaSomeUser
+		if err = json.Unmarshal([]byte(val), &user); err != nil {
+			return nil, fmt.Errorf("unmarshal json: %w", err)
+		}
+		user.ID = key
+		users = append(users, user)
+	}
+	return &users, nil
 }
 
 func (r RedisRepository) GetUserByID(ctx context.Context, id any) (*model.SchemaSomeUser, error) {
