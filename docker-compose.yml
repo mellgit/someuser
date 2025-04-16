@@ -51,7 +51,7 @@ services:
         max-size: "10m"
 
   mongodb:
-    image: mongo:latest
+    image: mongo:8.0.8-noble
     container_name: mongodb
     restart: always
     ports:
