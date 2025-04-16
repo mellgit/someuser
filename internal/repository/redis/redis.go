@@ -1,7 +1,9 @@
 package redis
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/mellgit/someuser/internal/config"
 	"github.com/mellgit/someuser/internal/model"
 	"github.com/mellgit/someuser/internal/repository"
@@ -17,8 +19,8 @@ func NewRedisRepository(envCfg config.EnvConfig) (repository.Repository, error) 
 
 	client := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%d", envCfg.RedisHost, envCfg.RedisPort),
-		Password: "",             // no password set
-		DB:       envCfg.RedisDB, // use default DB
+		Password: "", // no password set
+		DB:       envCfg.RedisDB,
 	})
 
 	fmt.Println("Redis Repository Initialized")
@@ -26,8 +28,26 @@ func NewRedisRepository(envCfg config.EnvConfig) (repository.Repository, error) 
 }
 
 func (r RedisRepository) CreateUser(ctx context.Context, request model.CreateUserRequest) (*model.SchemaSomeUser, error) {
-	//TODO implement me
-	panic("implement me")
+
+	data, err := json.Marshal(request)
+	if err != nil {
+		return nil, fmt.Errorf("marshal json: %w", err)
+	}
+	id, _ := uuid.NewV7()
+	temp := r.client.Set(ctx, id.String(), string(data), 0).Val()
+	fmt.Println(temp)
+
+	val, err := r.client.Get(ctx, id.String()).Result()
+	if err != nil {
+		return nil, fmt.Errorf("get value: %w", err)
+	}
+
+	var user model.SchemaSomeUser
+	if err = json.Unmarshal([]byte(val), &user); err != nil {
+		return nil, fmt.Errorf("unmarshal json: %w", err)
+	}
+	user.ID = id.String()
+	return &user, nil
 }
 
 func (r RedisRepository) GetAllUsers(ctx context.Context) (*[]model.SchemaSomeUser, error) {
