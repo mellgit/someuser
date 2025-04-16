@@ -33,8 +33,7 @@ func (r RedisRepository) CreateUser(ctx context.Context, request model.CreateUse
 		return nil, fmt.Errorf("marshal json: %w", err)
 	}
 	id, _ := uuid.NewV7()
-	temp := r.client.Set(ctx, id.String(), string(data), 0).Val()
-	fmt.Println(temp)
+	_ = r.client.Set(ctx, id.String(), string(data), 0).Val()
 
 	val, err := r.client.Get(ctx, id.String()).Result()
 	if err != nil {
@@ -97,6 +96,30 @@ func (r RedisRepository) DeleteUser(ctx context.Context, id any) error {
 }
 
 func (r RedisRepository) UpdateUser(ctx context.Context, id any, request model.UpdateUserRequest) (*model.SchemaSomeUser, error) {
-	//TODO implement me
-	panic("implement me")
+
+	val, err := r.client.Get(ctx, id.(string)).Result()
+	if err != nil {
+		return nil, fmt.Errorf("get value: %w", err)
+	}
+
+	var user model.SchemaSomeUser
+	if err = json.Unmarshal([]byte(val), &user); err != nil {
+		return nil, fmt.Errorf("unmarshal json: %w", err)
+	}
+	user.ID = id.(string)
+
+	updateUser := model.SchemaSomeUser{
+		Username: request.Username,
+		Email:    request.Email,
+		Password: request.Password,
+	}
+	data, err := json.Marshal(updateUser)
+	if err != nil {
+		return nil, fmt.Errorf("marshal json: %w", err)
+	}
+	_ = r.client.Set(ctx, id.(string), string(data), 0).Val()
+
+	updateUser.ID = id.(string)
+	return &updateUser, nil
+
 }
