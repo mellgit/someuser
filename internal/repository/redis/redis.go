@@ -56,8 +56,18 @@ func (r RedisRepository) GetAllUsers(ctx context.Context) (*[]model.SchemaSomeUs
 }
 
 func (r RedisRepository) GetUserByID(ctx context.Context, id any) (*model.SchemaSomeUser, error) {
-	//TODO implement me
-	panic("implement me")
+
+	val, err := r.client.Get(ctx, id.(string)).Result()
+	if err != nil {
+		return nil, fmt.Errorf("get value: %w", err)
+	}
+
+	var user model.SchemaSomeUser
+	if err = json.Unmarshal([]byte(val), &user); err != nil {
+		return nil, fmt.Errorf("unmarshal json: %w", err)
+	}
+	user.ID = id.(string)
+	return &user, nil
 }
 
 func (r RedisRepository) DeleteUser(ctx context.Context, id any) error {
