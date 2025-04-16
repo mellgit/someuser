@@ -88,8 +88,12 @@ func (r RedisRepository) GetUserByID(ctx context.Context, id any) (*model.Schema
 }
 
 func (r RedisRepository) DeleteUser(ctx context.Context, id any) error {
-	//TODO implement me
-	panic("implement me")
+
+	_, err := r.client.Del(ctx, id.(string)).Result()
+	if err != nil {
+		return fmt.Errorf("delete value: %w", err)
+	}
+	return nil
 }
 
 func (r RedisRepository) UpdateUser(ctx context.Context, id any, request model.UpdateUserRequest) (*model.SchemaSomeUser, error) {
