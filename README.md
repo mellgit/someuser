@@ -37,4 +37,6 @@ What you can do with a user:
 - update
 - get all users
 
+The `DB_TYPE` environment variable in the `./env` file allows you to switch between databases.
+
 **Note:** swagger documentation is available at `http://localhost:3000/swagger/index.html`
