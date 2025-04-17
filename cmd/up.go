@@ -54,7 +54,13 @@ func Up() {
 	}
 	app := fiber.New()
 	{
-		someUserService := factoryService.NewService(cfg, repo)
+		someUserService, err := factoryService.NewService(cfg, repo)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"action": "factoryService.NewService",
+			}).Fatal(err)
+		}
+
 		someUserHandler, err := factoryTransport.NewTransport(cfg, someUserService, log.WithFields(log.Fields{"service": "SomeUser"}))
 		if err != nil {
 			log.WithFields(log.Fields{
