@@ -14,6 +14,7 @@ type Config struct {
 
 type App struct {
 	Transport string `mapstructure:"transport"`
+	Service   string `mapstructure:"service"`
 }
 
 type Logging struct {

@@ -1,5 +1,6 @@
 app:
   transport: "http"
+  service: "someuser"
 
 logging:
   level: "debug"
