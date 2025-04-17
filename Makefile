@@ -14,7 +14,10 @@ clean-cache:
 	GOBIN=$(LOCAL_BIN) go clean -modcache
 
 generate-proto:
-	GOBIN=$(LOCAL_BIN) protoc --go_out=$(PATH_PROTO) --go_opt=paths=source_relative --go-grpc_out=$(PATH_PROTO) --go-grpc_opt=paths=source_relative someuser.proto
+	GOBIN=$(LOCAL_BIN) protoc --proto_path=$(PATH_PROTO) \
+	--go_out=$(PATH_PROTO) --go_opt=paths=source_relative \
+	--go-grpc_out=$(PATH_PROTO) --go-grpc_opt=paths=source_relative \
+	$(PATH_PROTO)/someuser.proto
 
 migration-status:
 	$(LOCAL_BIN)/goose -dir $(POSTGRES_MIGRATIONS_PATH) postgres $(POSTGRES_MIGRATIONS_DSN) status -v
