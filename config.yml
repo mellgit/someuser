@@ -1,3 +1,6 @@
+app:
+  transport: "http"
+
 logging:
   level: "debug"
   formatter: "text"
