@@ -9,7 +9,12 @@ import (
 	"github.com/mellgit/someuser/internal/config"
 	factoryRepository "github.com/mellgit/someuser/internal/repository/factory"
 	factoryService "github.com/mellgit/someuser/internal/service/factory"
-	factoryTransport "github.com/mellgit/someuser/internal/transport/factory"
+	"google.golang.org/grpc"
+	"net"
+
+	grpcHandler "github.com/mellgit/someuser/internal/transport/grpc/handler"
+	pb "github.com/mellgit/someuser/internal/transport/grpc/proto"
+	httpHandler "github.com/mellgit/someuser/internal/transport/http/handler"
 	"github.com/mellgit/someuser/pkg/logger"
 	log "github.com/sirupsen/logrus"
 )
@@ -52,27 +57,34 @@ func Up() {
 			"action": "repository.NewRepository",
 		}).Fatal(err)
 	}
-	app := fiber.New()
-	{
-		someUserService, err := factoryService.NewService(cfg, repo)
-		if err != nil {
-			log.WithFields(log.Fields{
-				"action": "factoryService.NewService",
-			}).Fatal(err)
-		}
-
-		someUserHandler, err := factoryTransport.NewTransport(cfg, someUserService, log.WithFields(log.Fields{"service": "SomeUser"}))
-		if err != nil {
-			log.WithFields(log.Fields{
-				"action": "factoryTransport.NewTransport",
-			}).Fatal(err)
-		}
-		someUserHandler.Register(app)
-
-		app.Get("/swagger/*", swagger.HandlerDefault)
+	someUserService, err := factoryService.NewService(cfg, repo)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"action": "factoryService.NewService",
+		}).Fatal(err)
 	}
-	log.WithFields(log.Fields{
-		"action": "app.Listen",
-	}).Fatal(app.Listen(fmt.Sprintf(":%v", envCfg.APIPort)))
+
+	// http server
+	go func() {
+		app := fiber.New()
+		someUserHandler := httpHandler.NewSomeUser(cfg, someUserService, log.WithFields(log.Fields{"service": "SomeUser"}))
+		someUserHandler.Register(app)
+		app.Get("/swagger/*", swagger.HandlerDefault)
+		log.Info("http server running")
+		log.WithFields(log.Fields{
+			"action": "app.Listen",
+		}).Fatal(app.Listen(fmt.Sprintf(":%v", envCfg.APIPort)))
+
+	}()
+
+	// gRPC Server
+	lis, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	grpcServer := grpc.NewServer()
+	pb.RegisterSomeUserServer(grpcServer, grpcHandler.NewSomeUserGRPC(someUserService))
+	log.Info("grpc server running")
+	log.Fatal(grpcServer.Serve(lis))
 
 }
