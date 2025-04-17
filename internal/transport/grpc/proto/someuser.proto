@@ -1,0 +1,46 @@
+syntax="proto3";
+
+package proto;
+
+option go_package = "github.com/mellgit/someuser";
+import "google/protobuf/empty.proto";
+
+
+service SomeUser {
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse){}
+  rpc GetAllUsers(google.protobuf.Empty) returns (GetAllUsersResponse){}
+  rpc GetUserByID(UserIDRequest) returns (CreateUserResponse){}
+  rpc DeleteUserByID(UserIDRequest) returns (MessageResponse){}
+  rpc UpdateUser(UpdateUserRequest) returns (CreateUserResponse){}
+}
+//
+message CreateUserRequest {
+  string name = 1;
+  string email = 2;
+  string password = 3;
+}
+message CreateUserResponse{
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string password = 4;
+}
+//
+message GetAllUsersResponse{
+  repeated CreateUserResponse SchemaSomeUsers = 1;
+}
+//
+message UserIDRequest {
+  string id = 1;
+}
+//
+message MessageResponse {
+  string message = 1;
+}
+//
+message UpdateUserRequest {
+  string id = 1;
+  CreateUserRequest updateBody = 2;
+}
+
+
