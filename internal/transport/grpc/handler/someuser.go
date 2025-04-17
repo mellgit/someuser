@@ -23,7 +23,7 @@ func NewSomeUserGRPC(service service.Service) *SomeUserGRPC {
 func (s *SomeUserGRPC) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 
 	payload := model.CreateUserRequest{
-		Username: in.GetName(),
+		Username: in.GetUsername(),
 		Email:    in.GetEmail(),
 		Password: in.GetPassword(),
 	}
@@ -34,7 +34,7 @@ func (s *SomeUserGRPC) CreateUser(ctx context.Context, in *pb.CreateUserRequest)
 
 	resp := &pb.CreateUserResponse{
 		Id:       user.ID.(string),
-		Name:     user.Username,
+		Username: user.Username,
 		Email:    user.Email,
 		Password: user.Password,
 	}
@@ -51,7 +51,7 @@ func (s *SomeUserGRPC) GetAllUsers(_ context.Context, _ *empty.Empty) (*pb.GetAl
 	}
 	for _, val := range *users {
 		resp.SchemaSomeUsers = append(resp.SchemaSomeUsers, &pb.CreateUserResponse{
-			Name:     val.Username,
+			Username: val.Username,
 			Email:    val.Email,
 			Password: val.Password,
 		})
@@ -66,7 +66,7 @@ func (s *SomeUserGRPC) GetUserByID(ctx context.Context, in *pb.UserIDRequest) (*
 	}
 	resp := &pb.CreateUserResponse{
 		Id:       user.ID.(string),
-		Name:     user.Username,
+		Username: user.Username,
 		Email:    user.Email,
 		Password: user.Password,
 	}
@@ -87,7 +87,7 @@ func (s *SomeUserGRPC) DeleteUserByID(ctx context.Context, in *pb.UserIDRequest)
 
 func (s *SomeUserGRPC) UpdateUser(ctx context.Context, in *pb.UpdateUserRequest) (*pb.CreateUserResponse, error) {
 	payload := model.UpdateUserRequest{
-		Username: in.GetUpdateBody().GetName(),
+		Username: in.GetUpdateBody().GetUsername(),
 		Email:    in.GetUpdateBody().GetEmail(),
 		Password: in.GetUpdateBody().GetPassword(),
 	}
@@ -98,7 +98,7 @@ func (s *SomeUserGRPC) UpdateUser(ctx context.Context, in *pb.UpdateUserRequest)
 	}
 	resp := &pb.CreateUserResponse{
 		Id:       updateUser.ID.(string),
-		Name:     updateUser.Username,
+		Username: updateUser.Username,
 		Email:    updateUser.Email,
 		Password: updateUser.Password,
 	}
