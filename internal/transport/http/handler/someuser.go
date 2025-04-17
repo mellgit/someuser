@@ -12,12 +12,12 @@ import (
 const someUserPath = "/api/v1/someusers"
 
 type SomeUser struct {
-	SomeUserService *service.SomeUser
+	SomeUserService service.Service
 	Cfg             *config.Config
 	Logger          *log.Entry
 }
 
-func NewSomeUser(cfg *config.Config, someUserService *service.SomeUser, logger *log.Entry) *SomeUser {
+func NewSomeUser(cfg *config.Config, someUserService service.Service, logger *log.Entry) *SomeUser {
 	return &SomeUser{
 		Cfg:             cfg,
 		SomeUserService: someUserService,
