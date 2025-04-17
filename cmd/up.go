@@ -9,7 +9,7 @@ import (
 	"github.com/mellgit/someuser/internal/config"
 	factoryRepository "github.com/mellgit/someuser/internal/repository/factory"
 	factoryService "github.com/mellgit/someuser/internal/service/factory"
-	"github.com/mellgit/someuser/internal/transport/http/handler"
+	factoryTransport "github.com/mellgit/someuser/internal/transport/factory"
 	"github.com/mellgit/someuser/pkg/logger"
 	log "github.com/sirupsen/logrus"
 )
@@ -55,7 +55,12 @@ func Up() {
 	app := fiber.New()
 	{
 		someUserService := factoryService.NewService(cfg, repo)
-		someUserHandler := handler.NewSomeUser(cfg, someUserService, log.WithFields(log.Fields{"service": "SomeUser"}))
+		someUserHandler, err := factoryTransport.NewTransport(cfg, someUserService, log.WithFields(log.Fields{"service": "SomeUser"}))
+		if err != nil {
+			log.WithFields(log.Fields{
+				"action": "factoryTransport.NewTransport",
+			}).Fatal(err)
+		}
 		someUserHandler.Register(app)
 
 		app.Get("/swagger/*", swagger.HandlerDefault)

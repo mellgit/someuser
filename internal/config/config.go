@@ -9,6 +9,11 @@ import (
 
 type Config struct {
 	Logging `mapstructure:"logging"`
+	App     `mapstructure:"app"`
+}
+
+type App struct {
+	Transport string `mapstructure:"transport"`
 }
 
 type Logging struct {
