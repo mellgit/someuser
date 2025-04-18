@@ -70,7 +70,7 @@ func Up() {
 		someUserHandler := httpHandler.NewSomeUser(cfg, someUserService, log.WithFields(log.Fields{"service": "SomeUser"}))
 		someUserHandler.Register(app)
 		app.Get("/swagger/*", swagger.HandlerDefault)
-		log.Info("http server running")
+		log.Infof("http server listening %v:%v", envCfg.APIHost, envCfg.APIPort)
 		log.WithFields(log.Fields{
 			"action": "app.Listen",
 		}).Fatal(app.Listen(fmt.Sprintf(":%v", envCfg.APIPort)))
@@ -78,13 +78,17 @@ func Up() {
 	}()
 
 	// gRPC Server
-	lis, err := net.Listen("tcp", ":50051")
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
 	grpcServer := grpc.NewServer()
-	pb.RegisterSomeUserServer(grpcServer, grpcHandler.NewSomeUserGRPC(someUserService))
-	log.Info("grpc server running")
-	log.Fatal(grpcServer.Serve(lis))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%v", envCfg.GRPCPort))
+	if err != nil {
+		log.WithFields(log.Fields{
+			"action": "net.Listen",
+		}).Fatal(err)
+	}
+	pb.RegisterSomeUserServer(grpcServer, grpcHandler.NewSomeUserGRPC(someUserService, log.WithFields(log.Fields{"service": "SomeUser"})))
+	log.Infof("grpc server listening %v:%v", envCfg.GRPCHost, envCfg.GRPCPort)
+	log.WithFields(log.Fields{
+		"action": "grpcServer.Serve",
+	}).Fatal(grpcServer.Serve(lis))
 
 }
