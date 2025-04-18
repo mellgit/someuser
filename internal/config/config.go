@@ -13,8 +13,7 @@ type Config struct {
 }
 
 type App struct {
-	Transport string `mapstructure:"transport"`
-	Service   string `mapstructure:"service"`
+	Service string `mapstructure:"service"`
 }
 
 type Logging struct {
@@ -25,8 +24,11 @@ type Logging struct {
 }
 
 type EnvConfig struct {
-	APIHost string `env:"API_HOST" envDefault:"127.0.0.1"`
+	APIHost string `env:"API_HOST" envDefault:"localhost"`
 	APIPort int    `env:"API_PORT" envDefault:"3000"`
+
+	GRPCHost string `env:"GRPC_HOST" envDefault:"localhost"`
+	GRPCPort int    `env:"GRPC_PORT" envDefault:"50051"`
 
 	DBType string `env:"DB_TYPE" envDefault:"postgres"`
 
