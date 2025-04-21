@@ -6,6 +6,7 @@ import (
 	"github.com/mellgit/someuser/internal/config"
 	"github.com/mellgit/someuser/internal/model"
 	"github.com/mellgit/someuser/internal/service"
+	"github.com/mellgit/someuser/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -56,6 +57,14 @@ func (h *SomeUser) CreateUser(ctx *fiber.Ctx) error {
 		msgErr := model.Error{Error: err.Error()}
 		return ctx.Status(fiber.StatusServiceUnavailable).JSON(msgErr)
 
+	}
+
+	if err := utils.ValidateStruct(payload); err != nil {
+		h.Logger.WithFields(log.Fields{
+			"action": "utils.ValidateStruct",
+		}).Errorf("%v", err)
+		msgErr := model.Error{Error: err.Error()}
+		return ctx.Status(fiber.StatusBadRequest).JSON(msgErr)
 	}
 
 	user, err := h.SomeUserService.CreateUser(payload)
@@ -172,6 +181,15 @@ func (h *SomeUser) UpdateUser(ctx *fiber.Ctx) error {
 		msgErr := model.Error{Error: err.Error()}
 		return ctx.Status(fiber.StatusServiceUnavailable).JSON(msgErr)
 	}
+
+	if err := utils.ValidateStruct(payload); err != nil {
+		h.Logger.WithFields(log.Fields{
+			"action": "utils.ValidateStruct",
+		}).Errorf("%v", err)
+		msgErr := model.Error{Error: err.Error()}
+		return ctx.Status(fiber.StatusBadRequest).JSON(msgErr)
+	}
+
 	user, err := h.SomeUserService.UpdateUser(id, payload)
 	if err != nil {
 		h.Logger.WithFields(log.Fields{
