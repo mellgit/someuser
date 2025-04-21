@@ -1,6 +1,6 @@
 # someuser
 
-This repository provides a basic example of a CRUD service that interacts with various types of databases:
+This repository provides a basic example of a CRUD service(http, grpc) that interacts with various types of databases:
 - PostgreSQL
 - MongoDB
 - Redis
