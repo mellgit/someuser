@@ -6,6 +6,7 @@ import (
 	"github.com/mellgit/someuser/internal/model"
 	"github.com/mellgit/someuser/internal/service"
 	pb "github.com/mellgit/someuser/internal/transport/grpc/proto"
+	"github.com/mellgit/someuser/pkg/utils"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 )
@@ -30,6 +31,13 @@ func (h *SomeUserGRPC) CreateUser(ctx context.Context, in *pb.CreateUserRequest)
 		Email:    in.GetEmail(),
 		Password: in.GetPassword(),
 	}
+	if err := utils.ValidateStruct(payload); err != nil {
+		h.Logger.WithFields(log.Fields{
+			"action": "CreateUser",
+		}).Errorf("%v", err)
+		return nil, fmt.Errorf("validate user: %v", err)
+	}
+
 	user, err := h.service.CreateUser(payload)
 	if err != nil {
 		h.Logger.WithFields(log.Fields{
@@ -106,6 +114,13 @@ func (h *SomeUserGRPC) UpdateUser(ctx context.Context, in *pb.UpdateUserRequest)
 		Username: in.GetUpdateBody().GetUsername(),
 		Email:    in.GetUpdateBody().GetEmail(),
 		Password: in.GetUpdateBody().GetPassword(),
+	}
+
+	if err := utils.ValidateStruct(payload); err != nil {
+		h.Logger.WithFields(log.Fields{
+			"action": "UpdateUser",
+		}).Errorf("%v", err)
+		return nil, fmt.Errorf("validate user: %v", err)
 	}
 
 	updateUser, err := h.service.UpdateUser(in.GetId(), payload)
