@@ -6,6 +6,7 @@ This repository provides a basic example of a CRUD service(http, grpc) that inte
 - [Docker Installation](#Docker)
 - [How It Works](#Jobs)
 - [Stack](#Stack)
+- [Struct project](#Struct)
 
 
 ## <a name="Docker"></a> Docker Installation
@@ -45,6 +46,7 @@ Backend
 - **Validator:**
 - **goose:** migrations
 - **gRPC**
+- **swagger**
 
 Data Base
 - **PostgreSQL**
@@ -53,3 +55,57 @@ Data Base
 - **Cache**
 
 **Note:** swagger documentation is available at `http://localhost:3000/swagger/index.html`
+
+## <a name="Struct"></a> Struct project
+```
+someuser/
+├── cmd                                # run app
+│  └── up.go
+├── docs                               # build swagger
+│  ├── docs.go
+│  ├── swagger.json
+│  └── swagger.yaml
+├── internal
+│  ├── config
+│  │  └── config.go
+│  ├── model
+│  │  ├── errormessage.go
+│  │  └── someuser.go
+│  ├── repository                      # db layer
+│  │  ├── cache
+│  │  │  └── cache.go
+│  │  ├── factory
+│  │  │  └── factory.go
+│  │  ├── mongo
+│  │  │  └── mongo.go
+│  │  ├── postgres
+│  │  │  └── postgres.go
+│  │  ├── redis
+│  │  │  └── redis.go
+│  │  └── repository.go
+│  ├── service                          # service layer
+│  │  ├── factory
+│  │  │  └── factory.go
+│  │  ├── service.go
+│  │  └── someuser
+│  │      └── someuser.go
+│  └── transport                        # transport layer
+│      ├── grpc
+│      │  ├── handler
+│      │  │  └── someuser.go
+│      │  └── proto
+│      │      ├── someuser.pb.go
+│      │      ├── someuser.proto
+│      │      └── someuser_grpc.pb.go
+│      └── http
+│          └── handler
+│              └── someuser.go
+├── main.go
+├── migrations
+│  └── 20250411055852_init_someusers.sql   
+└── pkg
+    ├── logger
+    │  └── logger.go
+    └── utils
+        └── utils.go                     # validation
+```
